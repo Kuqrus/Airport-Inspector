@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Stats</class>
+ <widget class="QDialog" name="Stats">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1026</width>
+    <height>565</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Dialog</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QLabel" name="lb_portName">
+     <property name="text">
+      <string>Статистика аэропорта: </string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QTabWidget" name="tabW_stats">
+     <property name="tabPosition">
+      <enum>QTabWidget::North</enum>
+     </property>
+     <property name="tabShape">
+      <enum>QTabWidget::Rounded</enum>
+     </property>
+     <property name="currentIndex">
+      <number>1</number>
+     </property>
+     <property name="movable">
+      <bool>false</bool>
+     </property>
+     <widget class="QWidget" name="tab_year">
+      <attribute name="title">
+       <string>Загруженность за год</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_3">
+       <item>
+        <layout class="QVBoxLayout" name="vLay_year"/>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tab_month">
+      <attribute name="title">
+       <string>Загруженность за месяц</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <item>
+          <widget class="QComboBox" name="cb_months">
+           <item>
+            <property name="text">
+             <string>Январь</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Февраль</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Март</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Апрель</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Май</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Июнь</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Июль</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Август</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Сентябрь</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Октябрь</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Ноябрь</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Декабрь</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_2">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QVBoxLayout" name="vLay_month"/>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pb_exit">
+       <property name="text">
+        <string>Закрыть</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer_3">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
