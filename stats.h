@@ -32,6 +32,7 @@ public:
 
     void WriteYearStatistic(QVector<int> &vecCount, QVector<int> &vecDate);
     void WriteMonthStatistic(QVector<int> &vecCount);
+    void SaveHash(QHash<int, QVector<int>> &hash);
 
     void clearLayout(QLayout *layout);
 
@@ -45,12 +46,15 @@ signals:
     void sig_GetYearStat(QVector<int>&, QVector<int>&);
     void sig_GetMonthStat(QVector<int>&);
 
+    void sig_GetAllMonthStat(QHash<int, QVector<int>>&);
+
 
 private:
     Ui::Stats *ui;
 
     DataBase *DB;
     QString selectedAirport;
+    QHash<int, QVector<int>> monthStats;
 
     QChart *chart;
     QChartView *chartView;

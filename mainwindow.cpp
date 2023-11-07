@@ -7,12 +7,12 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     msg = new QMessageBox(this);
-    timer = new QTimer();
+    timer = new QTimer(this);
 
     ui->rb_departure->setChecked(1);
     IsConnected(0);
 
-    DB = new DataBase;
+    DB = new DataBase(this);
     DB->AddDataBase(POSTGRE_DRIVER, DB_NAME);
 
     timer->start(0);
@@ -26,7 +26,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     });
 
-    stats = new Stats;
+    stats = new Stats(this);
     stats->setModal(1);
 
     connect(DB, &DataBase::sig_Connection, this, &MainWindow::IsConnected);
@@ -37,11 +37,12 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(DB, &DataBase::sig_SendYearStat, stats, &Stats::sig_GetYearStat);
     connect(DB, &DataBase::sig_SendMonthStat, stats, &Stats::sig_GetMonthStat);
+    connect(DB, &DataBase::sig_SendAllMonthStat, stats, &Stats::sig_GetAllMonthStat);
 
 }
 
 MainWindow::~MainWindow()
-{
+{    
     delete ui;
 }
 

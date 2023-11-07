@@ -4,8 +4,7 @@
 DataBase::DataBase(QObject *parent)
     : QObject{parent}
 {
-    DB = new QSqlDatabase;    
-
+    DB = new QSqlDatabase();
 
     query = new QSqlQuery();
 
@@ -13,12 +12,18 @@ DataBase::DataBase(QObject *parent)
     View = new QTableView();
 }
 
+DataBase::~DataBase()
+{
+    delete DB;
+    delete query;
+    delete QueryModel;
+    delete View;
+}
+
 void DataBase::AddDataBase(QString driver, QString DBName)
 {
     *DB = QSqlDatabase::addDatabase(driver, DBName);
-
 }
-
 
 void DataBase::ConnectToDB()
 {
@@ -34,9 +39,6 @@ void DataBase::ConnectToDB()
     else{
         emit sig_SendError(DB->lastError());
     }
-
-
-
 }
 
 
@@ -156,7 +158,6 @@ void DataBase::SendYearStatistic(QString airportName)
     }
 
     emit sig_SendYearStat(vectorCount, vectorDate);
-
 }
 
 void DataBase::SendMonthStatistic(QString airportName, int selectedMonth)
@@ -175,7 +176,7 @@ void DataBase::SendMonthStatistic(QString airportName, int selectedMonth)
     query->exec(request);
 
     int count;
-    QDate month;
+    QDate month;    
 
     QVector<int> vectorCount;
 
@@ -185,11 +186,57 @@ void DataBase::SendMonthStatistic(QString airportName, int selectedMonth)
         month = query->value(1).toDate();
 
         if(month.month() == selectedMonth){
-            vectorCount.push_back(count);
+
+            if(vectorCount.empty()){
+                vectorCount.fill(0, month.daysInMonth());
+            }
+            vectorCount[month.day() - 1] = count;
         }
     }
 
     emit sig_SendMonthStat(vectorCount);
+}
+
+void DataBase::SendAllMonthStatistic(QString airportName)
+{
+    airportCode = airPorts[airportName];
+
+    request =   "SELECT count(flight_no), date_trunc('day', scheduled_departure) as Day "
+                "FROM bookings.flights f "
+                "WHERE (scheduled_departure::date > date('2016-08-31') "
+                "AND scheduled_departure::date <= date('2017-08-31')) "
+                "AND (departure_airport = '" + airportCode + "' or arrival_airport = '" + airportCode + "') "
+                "GROUP BY Day";
+
+    *query = QSqlQuery(*DB);
+    query->exec(request);
+
+    QHash<int, QVector<int>> hash;
+    QVector<int> vector;
+
+    int count;
+    QDate month;
+    int curMonth = 0, prevMonth = 0;
+
+    while(query->next()){
+        prevMonth = curMonth;
+        count = query->value(0).toInt();
+        month = query->value(1).toDate();
+        curMonth = month.month();
+
+        if(curMonth != prevMonth){
+            hash[prevMonth] = vector;
+            vector.clear();
+        }
+
+        if(vector.empty()){
+            vector.fill(0, month.daysInMonth());
+        }
+
+        vector[month.day() - 1] = count;
+    }
+
+    emit sig_SendAllMonthStat(hash);
 }
 
 

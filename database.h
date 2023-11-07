@@ -23,6 +23,7 @@ class DataBase  : public QObject
     Q_OBJECT
 public:
     explicit DataBase(QObject *parent = nullptr);
+    ~DataBase();
 
     void AddDataBase(QString driver, QString DBName);
     void ConnectToDB();
@@ -35,6 +36,9 @@ public:
     void SendYearStatistic(QString airportName);
     void SendMonthStatistic(QString airportName, int selectedMonth);
 
+    void SendAllMonthStatistic(QString airportName);
+
+
 
 signals:
     void sig_Connection(bool);
@@ -45,6 +49,8 @@ signals:
 
     void sig_SendYearStat(QVector<int>&, QVector<int>&);
     void sig_SendMonthStat(QVector<int>&);
+
+    void sig_SendAllMonthStat(QHash<int, QVector<int>>&);
 
 
 

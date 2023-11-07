@@ -9,11 +9,15 @@ Stats::Stats(QWidget *parent) :
 
     connect(this, &Stats::sig_GetYearStat, this, &Stats::WriteYearStatistic);
     connect(this, &Stats::sig_GetMonthStat, this, &Stats::WriteMonthStatistic);
+    connect(this, &Stats::sig_GetAllMonthStat, this, &Stats::SaveHash);
 }
 
 Stats::~Stats()
 {
     delete ui;
+    delete DB;
+    delete chart;
+    delete chartView;
 }
 
 void Stats::UpdateSatistic(DataBase *dBase, QString port)
@@ -25,7 +29,8 @@ void Stats::UpdateSatistic(DataBase *dBase, QString port)
     ui->lb_portName->setText("Статистика аэропорта: " + port);
 
     DB->SendYearStatistic(selectedAirport);
-    DB->SendMonthStatistic(selectedAirport, ui->cb_months->currentIndex());
+    //DB->SendMonthStatistic(selectedAirport, ui->cb_months->currentIndex());         // Статистика с запросом каждого месяца отдельно
+    DB->SendAllMonthStatistic(selectedAirport);                                   // Статистика с запросом всех месяцев разом
 
 }
 
@@ -36,7 +41,7 @@ void Stats::WriteYearStatistic(QVector<int> &vecCount, QVector<int> &vecDate)
     QLocale loc = QLocale(QLocale::Russian);
     QString month;
 
-    QBarSet *set0 = new QBarSet("");
+    QBarSet *set0 = new QBarSet("", this);
     QStringList categories;
 
     int max = 0;
@@ -53,19 +58,19 @@ void Stats::WriteYearStatistic(QVector<int> &vecCount, QVector<int> &vecDate)
         }
     }
 
-    QBarSeries *series = new QBarSeries();
+    QBarSeries *series = new QBarSeries(this);
     series->append(set0);
 
     chart = new QChart();
     chart->addSeries(series);
     chart->setAnimationOptions(QChart::SeriesAnimations);
 
-    QBarCategoryAxis *axisX = new QBarCategoryAxis();
+    QBarCategoryAxis *axisX = new QBarCategoryAxis(this);
     axisX->append(categories);
     chart->addAxis(axisX, Qt::AlignBottom);
     series->attachAxis(axisX);
 
-    QValueAxis *axisY = new QValueAxis();
+    QValueAxis *axisY = new QValueAxis(this);
     axisY->setRange(0, max);
     chart->addAxis(axisY, Qt::AlignLeft);
     series->attachAxis(axisY);
@@ -76,34 +81,52 @@ void Stats::WriteYearStatistic(QVector<int> &vecCount, QVector<int> &vecDate)
     chartView->setRenderHint(QPainter::Antialiasing);
 
     ui->vLay_year->addWidget(chartView);
-
 }
 
 void Stats::WriteMonthStatistic(QVector<int> &vecCount)
 {
     clearLayout(ui->vLay_month);
 
-    QLineSeries *series = new QLineSeries();
+    QLineSeries *series = new QLineSeries(this);
 
     int day = 1;
+    int max = vecCount[0];
+    int min = vecCount[0];
     for(const auto& el : vecCount){
         series->append(day, el);
         day++;
+
+        if(el > max){
+            max = el;
+        }
+        if(min > el){
+            min = el;
+        }
     }
 
     chart = new QChart();
     chart->legend()->hide();
     chart->addSeries(series);
 
-    QValueAxis *xAxis = new QValueAxis();
+    QValueAxis *xAxis = new QValueAxis(this);
     xAxis->setLabelFormat("%.0f");
-    xAxis->setTickCount(day);
+    xAxis->setTickCount(vecCount.size());
     chart->addAxis(xAxis, Qt::AlignBottom);
     series->attachAxis(xAxis);
 
 
-    QValueAxis *yAxis = new QValueAxis();
+    QValueAxis *yAxis = new QValueAxis(this);
     yAxis->setLabelFormat("%.0f");
+
+    // Если сделать +-1, то график отображается не совсем корректно
+    // По сути восприятию не мешает, но так аккуратнее)
+    if(min == max){
+        min -= 2;
+        max += 2;
+    }
+
+    yAxis->setMin(min);
+    yAxis->setMax(max);
     chart->addAxis(yAxis, Qt::AlignLeft);
     series->attachAxis(yAxis);
 
@@ -111,6 +134,12 @@ void Stats::WriteMonthStatistic(QVector<int> &vecCount)
     chartView->setRenderHint(QPainter::Antialiasing);
 
     ui->vLay_month->addWidget(chartView);
+}
+
+void Stats::SaveHash(QHash<int, QVector<int> > &hash)
+{
+    monthStats = hash;
+    WriteMonthStatistic(monthStats[ui->cb_months->currentIndex() + 1]);
 }
 
 void Stats::clearLayout(QLayout *layout)
@@ -127,8 +156,9 @@ void Stats::clearLayout(QLayout *layout)
 }
 
 void Stats::on_cb_months_currentIndexChanged(int index)
-{
-    DB->SendMonthStatistic(selectedAirport, index);
+{    
+    //DB->SendMonthStatistic(selectedAirport, index);                         // Статистика с запросом каждого месяца отдельно
+    WriteMonthStatistic(monthStats[ui->cb_months->currentIndex() + 1]);   // Статистика с запросом всех месяцев разом
 }
 
 void Stats::on_pb_exit_clicked()
