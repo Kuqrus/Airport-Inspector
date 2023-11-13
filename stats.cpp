@@ -7,6 +7,10 @@ Stats::Stats(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    //DB = nullptr;
+    chart = nullptr;
+    chartView = nullptr;
+
     connect(this, &Stats::sig_GetYearStat, this, &Stats::WriteYearStatistic);
     connect(this, &Stats::sig_GetMonthStat, this, &Stats::WriteMonthStatistic);
     connect(this, &Stats::sig_GetAllMonthStat, this, &Stats::SaveHash);
@@ -15,7 +19,7 @@ Stats::Stats(QWidget *parent) :
 Stats::~Stats()
 {
     delete ui;
-    delete DB;
+    //delete DB;
     delete chart;
     delete chartView;
 }
